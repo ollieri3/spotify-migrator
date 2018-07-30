@@ -1,8 +1,8 @@
 {
-  "name": "@stencil/starter",
+  "name": "spotify-migrator",
   "private": true,
   "version": "0.0.1",
-  "description": "Stencil App Starter",
+  "description": "A simple app to help you migrate to a new Spotify account",
   "scripts": {
     "build": "stencil build --prerender",
     "start": "stencil build --dev --watch --serve",
@@ -14,6 +14,7 @@
     "@stencil/router": "^0.2.2"
   },
   "devDependencies": {
+    "@stencil/sass": "0.0.5",
     "@types/jest": "^21.1.1",
     "jest": "^21.2.1"
   },
@@ -21,12 +22,8 @@
     "type": "git",
     "url": "git+https://github.com/ionic-team/stencil-app-starter.git"
   },
-  "author": "Ionic Team",
+  "author": "Oliver Ridsdale",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/ionic-team/stencil"
-  },
-  "homepage": "https://github.com/ionic-team/stencil",
   "jest": {
     "transform": {
       "^.+\\.(ts|tsx)$": "<rootDir>/node_modules/@stencil/core/testing/jest.preprocessor.js"
