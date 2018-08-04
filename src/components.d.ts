@@ -28,9 +28,6 @@ declare global {
 import '@stencil/router';
 import '@stencil/state-tunnel';
 
-import {
-  MatchResults,
-} from '@stencil/router';
 
 declare global {
 
@@ -68,31 +65,31 @@ declare global {
 declare global {
 
   namespace StencilComponents {
-    interface AppProfile {
-      'match': MatchResults;
+    interface AppNotFound {
+
     }
   }
 
-  interface HTMLAppProfileElement extends StencilComponents.AppProfile, HTMLStencilElement {}
+  interface HTMLAppNotFoundElement extends StencilComponents.AppNotFound, HTMLStencilElement {}
 
-  var HTMLAppProfileElement: {
-    prototype: HTMLAppProfileElement;
-    new (): HTMLAppProfileElement;
+  var HTMLAppNotFoundElement: {
+    prototype: HTMLAppNotFoundElement;
+    new (): HTMLAppNotFoundElement;
   };
   interface HTMLElementTagNameMap {
-    'app-profile': HTMLAppProfileElement;
+    'app-not-found': HTMLAppNotFoundElement;
   }
   interface ElementTagNameMap {
-    'app-profile': HTMLAppProfileElement;
+    'app-not-found': HTMLAppNotFoundElement;
   }
   namespace JSX {
     interface IntrinsicElements {
-      'app-profile': JSXElements.AppProfileAttributes;
+      'app-not-found': JSXElements.AppNotFoundAttributes;
     }
   }
   namespace JSXElements {
-    export interface AppProfileAttributes extends HTMLAttributes {
-      'match'?: MatchResults;
+    export interface AppNotFoundAttributes extends HTMLAttributes {
+
     }
   }
 }

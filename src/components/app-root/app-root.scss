@@ -1,5 +1,6 @@
-header {
-  background: #5851ff;
+.global-header {
+  // background: #5851ff;
+  background: #1de9b6;
   color: white;
   height: 56px;
   display: flex;
@@ -7,7 +8,7 @@ header {
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
 }
 
-h1 {
+.global-header__title {
   font-size: 1.4rem;
   font-weight: 500;
   color: #fff;

@@ -2,7 +2,7 @@
 const sass = require('@stencil/sass')
 
 exports.config = {
-  globalStyle: 'src/global/app.css',
+  globalStyle: 'src/global/app.scss',
   plugins: [
     sass()
   ]
