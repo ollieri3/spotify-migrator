@@ -6,6 +6,8 @@
   "scripts": {
     "build": "stencil build --prerender",
     "start": "stencil build --dev --watch --serve",
+    "prod": "stencil build --prod",
+    "serve:prod": "stencil build --prod && http-server ./www",
     "test": "jest",
     "test.watch": "jest --watch"
   },
@@ -16,6 +18,7 @@
   "devDependencies": {
     "@stencil/sass": "0.0.5",
     "@types/jest": "^21.1.1",
+    "http-server": "^0.11.1",
     "jest": "^21.2.1"
   },
   "repository": {
