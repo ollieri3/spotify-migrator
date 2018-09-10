@@ -27,6 +27,45 @@ declare global {
 
 import '@stencil/router';
 
+import {
+  SpotifyService,
+} from './services';
+import {
+  RouterHistory,
+} from '@stencil/router';
+
+declare global {
+
+  namespace StencilComponents {
+    interface AppActiveUserCard {
+      'user': any;
+    }
+  }
+
+  interface HTMLAppActiveUserCardElement extends StencilComponents.AppActiveUserCard, HTMLStencilElement {}
+
+  var HTMLAppActiveUserCardElement: {
+    prototype: HTMLAppActiveUserCardElement;
+    new (): HTMLAppActiveUserCardElement;
+  };
+  interface HTMLElementTagNameMap {
+    'app-active-user-card': HTMLAppActiveUserCardElement;
+  }
+  interface ElementTagNameMap {
+    'app-active-user-card': HTMLAppActiveUserCardElement;
+  }
+  namespace JSX {
+    interface IntrinsicElements {
+      'app-active-user-card': JSXElements.AppActiveUserCardAttributes;
+    }
+  }
+  namespace JSXElements {
+    export interface AppActiveUserCardAttributes extends HTMLAttributes {
+      'user'?: any;
+    }
+  }
+}
+
 
 declare global {
 
@@ -122,6 +161,107 @@ declare global {
   namespace JSXElements {
     export interface AppRootAttributes extends HTMLAttributes {
 
+    }
+  }
+}
+
+
+declare global {
+
+  namespace StencilComponents {
+    interface AppStepOne {
+      'spotifyService': SpotifyService;
+    }
+  }
+
+  interface HTMLAppStepOneElement extends StencilComponents.AppStepOne, HTMLStencilElement {}
+
+  var HTMLAppStepOneElement: {
+    prototype: HTMLAppStepOneElement;
+    new (): HTMLAppStepOneElement;
+  };
+  interface HTMLElementTagNameMap {
+    'app-step-one': HTMLAppStepOneElement;
+  }
+  interface ElementTagNameMap {
+    'app-step-one': HTMLAppStepOneElement;
+  }
+  namespace JSX {
+    interface IntrinsicElements {
+      'app-step-one': JSXElements.AppStepOneAttributes;
+    }
+  }
+  namespace JSXElements {
+    export interface AppStepOneAttributes extends HTMLAttributes {
+      'spotifyService'?: SpotifyService;
+    }
+  }
+}
+
+
+declare global {
+
+  namespace StencilComponents {
+    interface AppStepTwo {
+      'history': RouterHistory;
+      'spotifyService': SpotifyService;
+    }
+  }
+
+  interface HTMLAppStepTwoElement extends StencilComponents.AppStepTwo, HTMLStencilElement {}
+
+  var HTMLAppStepTwoElement: {
+    prototype: HTMLAppStepTwoElement;
+    new (): HTMLAppStepTwoElement;
+  };
+  interface HTMLElementTagNameMap {
+    'app-step-two': HTMLAppStepTwoElement;
+  }
+  interface ElementTagNameMap {
+    'app-step-two': HTMLAppStepTwoElement;
+  }
+  namespace JSX {
+    interface IntrinsicElements {
+      'app-step-two': JSXElements.AppStepTwoAttributes;
+    }
+  }
+  namespace JSXElements {
+    export interface AppStepTwoAttributes extends HTMLAttributes {
+      'history'?: RouterHistory;
+      'spotifyService'?: SpotifyService;
+    }
+  }
+}
+
+
+declare global {
+
+  namespace StencilComponents {
+    interface AppTransferForm {
+
+    }
+  }
+
+  interface HTMLAppTransferFormElement extends StencilComponents.AppTransferForm, HTMLStencilElement {}
+
+  var HTMLAppTransferFormElement: {
+    prototype: HTMLAppTransferFormElement;
+    new (): HTMLAppTransferFormElement;
+  };
+  interface HTMLElementTagNameMap {
+    'app-transfer-form': HTMLAppTransferFormElement;
+  }
+  interface ElementTagNameMap {
+    'app-transfer-form': HTMLAppTransferFormElement;
+  }
+  namespace JSX {
+    interface IntrinsicElements {
+      'app-transfer-form': JSXElements.AppTransferFormAttributes;
+    }
+  }
+  namespace JSXElements {
+    export interface AppTransferFormAttributes extends HTMLAttributes {
+      'onStartTransfer'?: (event: CustomEvent) => void;
     }
   }
 }

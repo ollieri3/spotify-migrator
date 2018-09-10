@@ -1,0 +1,40 @@
+app-transfer-form {
+
+  .transfer-form {
+    display: block;
+    flex-basis: 100%;
+  }
+
+  .transfer-form__list {
+    list-style-type: none;
+    padding: 0;
+  }
+
+  .transfer-form__list-item {
+    transition: background-color 0.15s ease;
+    border-radius: 5px;
+    margin: 0.5em 0;
+    padding: 1em;
+    display: block;
+    background-color: #fff;
+    color: black;
+
+
+    &:hover , input, label {
+      cursor: pointer
+    }
+
+    input {
+      margin-right: 1em;
+    }
+  }
+
+  .transfer-form__list-item:hover , .transfer-form__list-item.active  {
+
+    background-color: #424242;
+    color: white;
+
+
+  }
+
+}
