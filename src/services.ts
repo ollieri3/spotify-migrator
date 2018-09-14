@@ -1,5 +1,11 @@
 import { CLIENT_ID } from './spotify-credentials';
 
+export enum Endpoint {
+  tracks = 'https://api.spotify.com/v1/me/tracks?limit=50',
+  playlists = 'https://api.spotify.com/v1/me/playlists?limit=50',
+  artists = 'https://api.spotify.com/v1/me/following?type=artist?limit=50'
+}
+
 export class SpotifyService {
 
   public ACCESS_TOKEN: string;
@@ -42,7 +48,7 @@ export class SpotifyService {
    * Helper function to get all paginated Spotify items. Returns a promise when all items recieved
    *
    */
-  public getAllPaginatedItems(requestUrl: string, callback: Function = undefined) {
+  public getAllPaginatedItems(requestUrl: Endpoint, callback: Function = undefined): Promise<any[]> {
     let items = [];
     let itemsRemaining = true;
     let url = requestUrl;
@@ -78,9 +84,9 @@ export class SpotifyService {
             return resolve(response.json());
           })
           .catch(err => reject(err))
+
       } catch (err) {
-        console.error(err);
-        reject();
+        reject(err);
       }
     })
   }
