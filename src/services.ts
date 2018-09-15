@@ -3,7 +3,7 @@ import { CLIENT_ID } from './spotify-credentials';
 export enum Endpoint {
   tracks = 'https://api.spotify.com/v1/me/tracks?limit=50',
   playlists = 'https://api.spotify.com/v1/me/playlists?limit=50',
-  artists = 'https://api.spotify.com/v1/me/following?type=artist?limit=50'
+  artists = 'https://api.spotify.com/v1/me/following?type=artist&limit=50'
 }
 
 export class SpotifyService {
@@ -57,6 +57,13 @@ export class SpotifyService {
         await this.get(url)
           .then(response => response.json())
           .then(response => {
+
+            // Some endpoints nest the 'paginated' object, bring it up a level.
+            const responseKeys = Object.keys(response);
+            if (responseKeys.length === 1) {
+              response = response[responseKeys[0]];
+            }
+
             callback ? callback(response) : null;
             items = items.concat(response.items);
             url = response.next;
@@ -93,7 +100,7 @@ export class SpotifyService {
 
   public authorizeUser(returnUrl: string, showDialog = false) {
     const redirect_uri = encodeURIComponent(returnUrl);
-    const scopes = encodeURIComponent('user-library-read playlist-read-private');
+    const scopes = encodeURIComponent('user-library-read playlist-read-private user-follow-read');
     window.location.replace(`https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${redirect_uri}&scope=${scopes}&show_dialog=${showDialog}`)
   }
 
