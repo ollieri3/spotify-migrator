@@ -26,6 +26,7 @@ declare global {
 }
 
 import '@stencil/router';
+import '@stencil/state-tunnel';
 
 import {
   SpotifyService,
@@ -205,6 +206,41 @@ declare global {
 declare global {
 
   namespace StencilComponents {
+    interface AppStepThree {
+      'history': RouterHistory;
+      'spotifyService': SpotifyService;
+    }
+  }
+
+  interface HTMLAppStepThreeElement extends StencilComponents.AppStepThree, HTMLStencilElement {}
+
+  var HTMLAppStepThreeElement: {
+    prototype: HTMLAppStepThreeElement;
+    new (): HTMLAppStepThreeElement;
+  };
+  interface HTMLElementTagNameMap {
+    'app-step-three': HTMLAppStepThreeElement;
+  }
+  interface ElementTagNameMap {
+    'app-step-three': HTMLAppStepThreeElement;
+  }
+  namespace JSX {
+    interface IntrinsicElements {
+      'app-step-three': JSXElements.AppStepThreeAttributes;
+    }
+  }
+  namespace JSXElements {
+    export interface AppStepThreeAttributes extends HTMLAttributes {
+      'history'?: RouterHistory;
+      'spotifyService'?: SpotifyService;
+    }
+  }
+}
+
+
+declare global {
+
+  namespace StencilComponents {
     interface AppStepTwo {
       'history': RouterHistory;
       'spotifyService': SpotifyService;
@@ -298,6 +334,39 @@ declare global {
   namespace JSXElements {
     export interface AppTransferProgressAttributes extends HTMLAttributes {
       'transferProgress'?: TransferProgress;
+    }
+  }
+}
+
+
+declare global {
+
+  namespace StencilComponents {
+    interface AppAuthorizationModal {
+      'spotifyService': SpotifyService;
+    }
+  }
+
+  interface HTMLAppAuthorizationModalElement extends StencilComponents.AppAuthorizationModal, HTMLStencilElement {}
+
+  var HTMLAppAuthorizationModalElement: {
+    prototype: HTMLAppAuthorizationModalElement;
+    new (): HTMLAppAuthorizationModalElement;
+  };
+  interface HTMLElementTagNameMap {
+    'app-authorization-modal': HTMLAppAuthorizationModalElement;
+  }
+  interface ElementTagNameMap {
+    'app-authorization-modal': HTMLAppAuthorizationModalElement;
+  }
+  namespace JSX {
+    interface IntrinsicElements {
+      'app-authorization-modal': JSXElements.AppAuthorizationModalAttributes;
+    }
+  }
+  namespace JSXElements {
+    export interface AppAuthorizationModalAttributes extends HTMLAttributes {
+      'spotifyService'?: SpotifyService;
     }
   }
 }

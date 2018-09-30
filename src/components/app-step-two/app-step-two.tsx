@@ -200,7 +200,11 @@ export class AppStepTwo {
       transferTransactions.push(this.downloadAndStoreArtists(database));
     }
 
-    Promise.all(transferTransactions).then(_ => console.log('All transactions complete'));
+    Promise.all(transferTransactions).then(_ => {
+      console.log('All transactions complete');
+      const authDialog: any = document.getElementById('authorization-dialog');
+      authDialog.showModal();
+    });
   }
 
   render() {
@@ -215,9 +219,6 @@ export class AppStepTwo {
           ? <app-transfer-progress transferProgress={this.transferProgress}></app-transfer-progress>
           : <app-transfer-form></app-transfer-form>
         }
-
-        {/* <app-transfer-progress transferProgress={{ library: { isComplete: true, itemsDownloaded: [125, 200], label: 'Library' } }}></app-transfer-progress> */}
-
       </section>
     )
   }

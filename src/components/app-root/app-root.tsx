@@ -1,5 +1,7 @@
 import { Component } from '@stencil/core';
 import { SpotifyService } from '../../services';
+import dialogPolyfill from 'dialog-polyfill';
+import 'intersection-observer'; // Polyfill for intersection observer
 import '@stencil/router';
 
 @Component({
@@ -9,6 +11,18 @@ import '@stencil/router';
 export class AppRoot {
 
   public spotifyService = new SpotifyService();
+
+  componentDidLoad() {
+    this.registerDialogs();
+  }
+
+  registerDialogs() {
+    //Register polyfill for all dialogs
+    const dialogs = document.querySelectorAll('dialog');
+    for (let i = 0; i < dialogs.length; i++) {
+      dialogPolyfill.registerDialog(dialogs[i]);
+    }
+  }
 
   render() {
     return [
@@ -25,10 +39,16 @@ export class AppRoot {
             <stencil-route url='/' component='app-home' exact={true} />
             <stencil-route url='/step-one' component='app-step-one' exact={true} componentProps={{ spotifyService: this.spotifyService }}></stencil-route>
             <stencil-route url='/step-two' component='app-step-two' exact={true} componentProps={{ spotifyService: this.spotifyService }}></stencil-route>
+            <stencil-route url='/step-three' component='app-step-three' exact={true} componentProps={{ spotifyService: this.spotifyService }}> </stencil-route>
             <stencil-route component="app-not-found"></stencil-route>
           </stencil-route-switch>
         </stencil-router>
-      </main>
+      </main>,
+
+      <dialog id="authorization-dialog">
+        <app-authorization-modal spotifyService={this.spotifyService}></app-authorization-modal>
+      </dialog>
+
     ];
   }
 }
