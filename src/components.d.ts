@@ -33,6 +33,9 @@ import {
 import {
   RouterHistory,
 } from '@stencil/router';
+import {
+  TransferProgress,
+} from './components/app-transfer-progress/app-transfer-progress';
 
 declare global {
 
@@ -262,6 +265,39 @@ declare global {
   namespace JSXElements {
     export interface AppTransferFormAttributes extends HTMLAttributes {
       'onStartTransfer'?: (event: CustomEvent) => void;
+    }
+  }
+}
+
+
+declare global {
+
+  namespace StencilComponents {
+    interface AppTransferProgress {
+      'transferProgress': TransferProgress;
+    }
+  }
+
+  interface HTMLAppTransferProgressElement extends StencilComponents.AppTransferProgress, HTMLStencilElement {}
+
+  var HTMLAppTransferProgressElement: {
+    prototype: HTMLAppTransferProgressElement;
+    new (): HTMLAppTransferProgressElement;
+  };
+  interface HTMLElementTagNameMap {
+    'app-transfer-progress': HTMLAppTransferProgressElement;
+  }
+  interface ElementTagNameMap {
+    'app-transfer-progress': HTMLAppTransferProgressElement;
+  }
+  namespace JSX {
+    interface IntrinsicElements {
+      'app-transfer-progress': JSXElements.AppTransferProgressAttributes;
+    }
+  }
+  namespace JSXElements {
+    export interface AppTransferProgressAttributes extends HTMLAttributes {
+      'transferProgress'?: TransferProgress;
     }
   }
 }
