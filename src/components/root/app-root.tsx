@@ -33,7 +33,7 @@ export class AppRoot {
         </stencil-route-link>
       </header>,
 
-      <main>
+      <main id="main">
         <stencil-router>
           <stencil-route-switch scrollTopOffset={0}>
             <stencil-route url='/' component='app-home' exact={true} />

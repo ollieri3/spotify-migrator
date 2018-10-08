@@ -1,0 +1,10 @@
+#album-canvas, #animation-canvas {
+  display: block;
+  position: absolute;
+  top: 60px;
+  left: 0px;
+  bottom: 0px;
+  right: 0px;
+  pointer-events: none;
+  z-index: -1;
+}

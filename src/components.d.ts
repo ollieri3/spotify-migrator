@@ -26,7 +26,6 @@ declare global {
 }
 
 import '@stencil/router';
-import '@stencil/state-tunnel';
 
 import {
   SpotifyService,
@@ -36,7 +35,7 @@ import {
 } from '@stencil/router';
 import {
   TransferProgress,
-} from './components/app-transfer-progress/app-transfer-progress';
+} from './components/transfer-progress/app-transfer-progress';
 
 declare global {
 
@@ -66,6 +65,72 @@ declare global {
   namespace JSXElements {
     export interface AppActiveUserCardAttributes extends HTMLAttributes {
       'user'?: any;
+    }
+  }
+}
+
+
+declare global {
+
+  namespace StencilComponents {
+    interface AppAlbumWall {
+      'setupAlbumWall': (size: number) => Function;
+    }
+  }
+
+  interface HTMLAppAlbumWallElement extends StencilComponents.AppAlbumWall, HTMLStencilElement {}
+
+  var HTMLAppAlbumWallElement: {
+    prototype: HTMLAppAlbumWallElement;
+    new (): HTMLAppAlbumWallElement;
+  };
+  interface HTMLElementTagNameMap {
+    'app-album-wall': HTMLAppAlbumWallElement;
+  }
+  interface ElementTagNameMap {
+    'app-album-wall': HTMLAppAlbumWallElement;
+  }
+  namespace JSX {
+    interface IntrinsicElements {
+      'app-album-wall': JSXElements.AppAlbumWallAttributes;
+    }
+  }
+  namespace JSXElements {
+    export interface AppAlbumWallAttributes extends HTMLAttributes {
+
+    }
+  }
+}
+
+
+declare global {
+
+  namespace StencilComponents {
+    interface AppAuthorizationModal {
+      'spotifyService': SpotifyService;
+    }
+  }
+
+  interface HTMLAppAuthorizationModalElement extends StencilComponents.AppAuthorizationModal, HTMLStencilElement {}
+
+  var HTMLAppAuthorizationModalElement: {
+    prototype: HTMLAppAuthorizationModalElement;
+    new (): HTMLAppAuthorizationModalElement;
+  };
+  interface HTMLElementTagNameMap {
+    'app-authorization-modal': HTMLAppAuthorizationModalElement;
+  }
+  interface ElementTagNameMap {
+    'app-authorization-modal': HTMLAppAuthorizationModalElement;
+  }
+  namespace JSX {
+    interface IntrinsicElements {
+      'app-authorization-modal': JSXElements.AppAuthorizationModalAttributes;
+    }
+  }
+  namespace JSXElements {
+    export interface AppAuthorizationModalAttributes extends HTMLAttributes {
+      'spotifyService'?: SpotifyService;
     }
   }
 }
@@ -334,39 +399,6 @@ declare global {
   namespace JSXElements {
     export interface AppTransferProgressAttributes extends HTMLAttributes {
       'transferProgress'?: TransferProgress;
-    }
-  }
-}
-
-
-declare global {
-
-  namespace StencilComponents {
-    interface AppAuthorizationModal {
-      'spotifyService': SpotifyService;
-    }
-  }
-
-  interface HTMLAppAuthorizationModalElement extends StencilComponents.AppAuthorizationModal, HTMLStencilElement {}
-
-  var HTMLAppAuthorizationModalElement: {
-    prototype: HTMLAppAuthorizationModalElement;
-    new (): HTMLAppAuthorizationModalElement;
-  };
-  interface HTMLElementTagNameMap {
-    'app-authorization-modal': HTMLAppAuthorizationModalElement;
-  }
-  interface ElementTagNameMap {
-    'app-authorization-modal': HTMLAppAuthorizationModalElement;
-  }
-  namespace JSX {
-    interface IntrinsicElements {
-      'app-authorization-modal': JSXElements.AppAuthorizationModalAttributes;
-    }
-  }
-  namespace JSXElements {
-    export interface AppAuthorizationModalAttributes extends HTMLAttributes {
-      'spotifyService'?: SpotifyService;
     }
   }
 }

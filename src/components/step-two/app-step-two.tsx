@@ -1,9 +1,9 @@
 import { Component, Prop, State, Listen } from "@stencil/core";
 import { RouterHistory } from '@stencil/router';
 import { SpotifyService, Endpoint } from "../../services";
-import { TransferForm } from "../app-transfer-form/app-transfer-form";
+import { TransferForm } from "../transfer-form/app-transfer-form";
 import idb, { DB, ObjectStore } from 'idb';
-import { TransferProgress, LoadingProgress } from "../app-transfer-progress/app-transfer-progress";
+import { TransferProgress, LoadingProgress } from "../transfer-progress/app-transfer-progress";
 
 export const DBTableSchema = {
   library: {
@@ -63,8 +63,24 @@ export class AppStepTwo {
   }
 
   downloadAndStoreLibrary(database: DB): Promise<undefined> {
+
+    const albumWall = document.querySelector('app-album-wall');
+    console.log(albumWall);
+
     return new Promise((resolve, reject) => {
-      this.spotifyService.getAllPaginatedItems(Endpoint.tracks, (response) => this.updateTransferProgress('library', response)).then(tracks => {
+
+      let addAlbumsFunc;
+
+      this.spotifyService.getAllPaginatedItems(
+        Endpoint.tracks,
+        (response) => {
+          console.log(response);
+          addAlbumsFunc = albumWall.setupAlbumWall(response.total);
+          addAlbumsFunc(response.items.map(item => item.track.album.images[1].url));
+          return this.updateTransferProgress('library', response)
+        }
+      ).then(tracks => {
+
         const transaction = database.transaction(DBTableSchema.library.tableName, 'readwrite');
         const store = transaction.objectStore(DBTableSchema.library.tableName);
         this.clearStoreAddItems(store, tracks).then(() => {
@@ -210,6 +226,7 @@ export class AppStepTwo {
   render() {
     return (
       <section class="page">
+
         <div class="step-heading">
           <h1><span class="big-num">2.</span>Select items for transfer</h1>
           <app-active-user-card user={this.userProfile}></app-active-user-card>
@@ -219,6 +236,8 @@ export class AppStepTwo {
           ? <app-transfer-progress transferProgress={this.transferProgress}></app-transfer-progress>
           : <app-transfer-form></app-transfer-form>
         }
+
+        <app-album-wall></app-album-wall>
       </section>
     )
   }
