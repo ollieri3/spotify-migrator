@@ -23,3 +23,7 @@
   color: #1de9b6;
 }
 
+main {
+  height: calc(100% - 60px);
+  overflow: auto;
+}

@@ -74,7 +74,7 @@ declare global {
 
   namespace StencilComponents {
     interface AppAlbumWall {
-      'setupAlbumWall': (size: number) => Function;
+      'addAlbums': (albums: string[]) => void;
     }
   }
 

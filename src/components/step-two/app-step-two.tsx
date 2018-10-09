@@ -65,18 +65,12 @@ export class AppStepTwo {
   downloadAndStoreLibrary(database: DB): Promise<undefined> {
 
     const albumWall = document.querySelector('app-album-wall');
-    console.log(albumWall);
 
     return new Promise((resolve, reject) => {
 
-      let addAlbumsFunc;
-
-      this.spotifyService.getAllPaginatedItems(
-        Endpoint.tracks,
+      this.spotifyService.getAllPaginatedItems(Endpoint.tracks,
         (response) => {
-          console.log(response);
-          addAlbumsFunc = albumWall.setupAlbumWall(response.total);
-          addAlbumsFunc(response.items.map(item => item.track.album.images[1].url));
+          albumWall.addAlbums(response.items.map(item => item.track.album.images[1].url));
           return this.updateTransferProgress('library', response)
         }
       ).then(tracks => {
@@ -183,6 +177,10 @@ export class AppStepTwo {
       [key]: itemUpdate
     }
   }
+
+  // addAlbumImages(paginationItems: any[]) {
+
+  // }
 
   async beginTransfer(form: TransferForm) {
 

@@ -1,4 +1,4 @@
-import { Component, Element, Method } from '@stencil/core';
+import { Component, Method } from '@stencil/core';
 
 export interface AlbumGrid {
   columns: number,
@@ -12,8 +12,13 @@ export interface CanvasPosition {
   y: number
 }
 
+export interface AlbumWallReferences {
+  canvasContext: CanvasRenderingContext2D,
+  albumCanvasEl: HTMLCanvasElement,
+  mainEl: HTMLElement
+}
+
 export interface AlbumWallConfiguration {
-  context: CanvasRenderingContext2D,
   grid: AlbumGrid,
   coords: CanvasPosition[]
 }
@@ -24,27 +29,18 @@ export interface AlbumWallConfiguration {
 })
 export class AppAlbumWall {
 
-  @Element() albumWall;
-
-  private albums: HTMLImageElement[] = [];
-  private albumWallConfiguration: AlbumWallConfiguration;
+  private albums: { image: HTMLImageElement, width: number, height: number, src: string }[] = [];
+  private albumWallReferences: AlbumWallReferences;
   private resizeListenerReference;
   private timeoutReference;
 
-  @Method() setupAlbumWall(size: number): Function {
-    this.albumWallConfiguration = this.setupCanvas(size);
-    return this.addAlbums.bind(this);
-  }
-
   componentDidLoad() {
-
-    // window.requestAnimationFrame(() => {
-    //   this.setupCanvas(albums.length);
-    // })
+    window.requestAnimationFrame(() => {
+      this.albumWallReferences = this.setupCanvas();
+    })
 
     this.resizeListenerReference = this.resizeListener.bind(this);
     window.addEventListener('resize', this.resizeListenerReference);
-
   }
 
   resizeListener() {
@@ -55,45 +51,55 @@ export class AppAlbumWall {
     }, 500);
   }
 
-  addAlbums(albums: string[]) {
+  @Method() addAlbums(albums: string[]) {
 
-    const { context, grid, coords } = this.albumWallConfiguration;
+    albums = [...new Set(albums)];
+    albums = albums.filter(albumSrc => this.albums.findIndex(album => album.src === albumSrc) === -1);
 
-    albums.forEach(album => {
-      this.createImage(album, grid.albumWidth).then(imageData => {
-        const idx = this.albums.push(imageData) - 1;
-        context.drawImage(imageData.image, coords[idx].x, coords[idx].y, grid.albumWidth, grid.albumWidth);
-      })
+    const { grid, coords } = this.recalculateCanvasSize(albums.length + this.albums.length);
+    const { canvasContext } = this.albumWallReferences;
+
+    this.albums.forEach((album, idx) => {
+      canvasContext.drawImage(album.image, coords[idx].x, coords[idx].y, grid.albumWidth, grid.albumWidth);
     })
 
-    // this.albums.then(albums => {
-    //   albums.forEach((album, idx) => {
-    //     this.createImage(album).then(imageData => {
-    //       ctx.drawImage(imageData.image, coords[idx].x, coords[idx].y, grid.albumWidth, grid.albumWidth);
-    //     })
-    //   })
-    // })
+    albums.forEach(albumSrc => {
+      this.createImage(albumSrc, grid.albumWidth).then(imageData => {
+        const idx = this.albums.push(imageData) - 1;
+        canvasContext.drawImage(imageData.image, coords[idx].x, coords[idx].y, grid.albumWidth, grid.albumWidth);
+      })
+    })
   }
 
-  setupCanvas(albumsAmount: number): { context: CanvasRenderingContext2D, grid: AlbumGrid, coords: CanvasPosition[] } {
 
-    console.log('setup fired');
-
+  setupCanvas(): AlbumWallReferences {
     const main = document.getElementById('main');
     const albumCanvas = document.getElementById('album-canvas') as HTMLCanvasElement;
 
     albumCanvas.height = main.scrollHeight;
     albumCanvas.width = main.offsetWidth;
 
-    const grid = this.calculateAlbumGridSize(albumsAmount, albumCanvas.width, albumCanvas.height);
+    return {
+      canvasContext: albumCanvas.getContext('2d'),
+      albumCanvasEl: albumCanvas,
+      mainEl: main
+    }
+  }
+
+  recalculateCanvasSize(numberOfItems): AlbumWallConfiguration {
+
+    const { albumCanvasEl, canvasContext } = this.albumWallReferences;
+
+    canvasContext.clearRect(0, 0, albumCanvasEl.width, albumCanvasEl.height);
+
+    const grid = this.calculateAlbumGridSize(numberOfItems, albumCanvasEl.width, albumCanvasEl.height);
 
     const albumCanvasSidePadding = grid.leftoverWidth / 2;
-    albumCanvas.style.padding = `${albumCanvasSidePadding}px ${albumCanvasSidePadding}px 0px ${albumCanvasSidePadding}px`;
+    albumCanvasEl.style.padding = `${albumCanvasSidePadding}px ${albumCanvasSidePadding}px 0px ${albumCanvasSidePadding}px`;
 
     return {
-      context: albumCanvas.getContext('2d'),
       grid,
-      coords: this.calculateArtworkCoordinates(grid, albumsAmount)
+      coords: this.calculateArtworkCoordinates(grid, numberOfItems)
     }
   }
 
@@ -136,7 +142,7 @@ export class AppAlbumWall {
       const image = new Image(64, 64);
       image.src = src;
       image.onload = () => {
-        resolve({ image, width: size, height: size });
+        resolve({ image, width: size, height: size, src });
       }
       image.onerror = () => {
         reject();
