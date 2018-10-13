@@ -46,8 +46,8 @@ export class AppAlbumWall {
   resizeListener() {
     if (this.timeoutReference) this.timeoutReference = clearInterval(this.timeoutReference);
     this.timeoutReference = setTimeout(() => {
-      // this.setupCanvas(albums.length);
-      // clear canvas if created an add item
+      this.setupCanvas();
+      this.addAlbums([]);
     }, 500);
   }
 
@@ -73,10 +73,15 @@ export class AppAlbumWall {
 
 
   setupCanvas(): AlbumWallReferences {
+    if (this.albumWallReferences) {
+      const { canvasContext, albumCanvasEl } = this.albumWallReferences;
+      canvasContext.clearRect(0, 0, albumCanvasEl.width, albumCanvasEl.height);
+    }
+
     const main = document.getElementById('main');
     const albumCanvas = document.getElementById('album-canvas') as HTMLCanvasElement;
 
-    albumCanvas.height = main.scrollHeight;
+    albumCanvas.height = main.clientHeight;
     albumCanvas.width = main.offsetWidth;
 
     return {
@@ -95,7 +100,8 @@ export class AppAlbumWall {
     const grid = this.calculateAlbumGridSize(numberOfItems, albumCanvasEl.width, albumCanvasEl.height);
 
     const albumCanvasSidePadding = grid.leftoverWidth / 2;
-    albumCanvasEl.style.padding = `${albumCanvasSidePadding}px ${albumCanvasSidePadding}px 0px ${albumCanvasSidePadding}px`;
+
+    albumCanvasEl.style.padding = `${albumCanvasSidePadding}px`;
 
     return {
       grid,

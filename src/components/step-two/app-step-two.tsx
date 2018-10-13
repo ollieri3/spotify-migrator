@@ -178,10 +178,6 @@ export class AppStepTwo {
     }
   }
 
-  // addAlbumImages(paginationItems: any[]) {
-
-  // }
-
   async beginTransfer(form: TransferForm) {
 
     const database = await this.createDatabase(DBTableSchema);
