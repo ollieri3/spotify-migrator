@@ -43,12 +43,15 @@ export class AppStepTwo {
   }
 
   async componentWillLoad() {
-    await this.spotifyService.validateAccessToken(this.history.location.hash)
-      .then((userProfile) => this.userProfile = userProfile)
-      .catch(() => this.history.push('/'));
+    try {
+      this.userProfile = await this.spotifyService.validateAccessToken(this.history.location.hash);
+    } catch (error) {
+      console.error(error);
+      this.history.push('/');
+    }
   }
 
-  async createDatabase(schema: any): Promise<DB> {
+  createDatabase(schema: any): Promise<DB> {
     return idb.open('smdb', 1, upgradeDb => {
       return Object.keys(schema).forEach(key => {
         return upgradeDb.createObjectStore(schema[key].tableName, schema[key].options)
@@ -56,103 +59,79 @@ export class AppStepTwo {
     })
   }
 
-  clearStoreAddItems(store: ObjectStore<any, any>, items: any[]): Promise<any> {
-    return store.clear().then(() => {
-      items.forEach(item => store.add(item));
-    })
+  async clearStoreAddItems(store: ObjectStore<any, any>, items: any[]): Promise<any> {
+    await store.clear();
+    items.forEach(item => store.add(item));
+    return;
   }
 
-  downloadAndStoreLibrary(database: DB): Promise<undefined> {
-
-    const albumWall = document.querySelector('app-album-wall');
-
-    return new Promise((resolve, reject) => {
-
-      this.spotifyService.getAllPaginatedItems(Endpoint.tracks,
-        (response) => {
-          albumWall.addAlbums(response.items.map(item => item.track.album.images[1].url));
-          return this.updateTransferProgress('library', response)
-        }
-      ).then(tracks => {
-
-        const transaction = database.transaction(DBTableSchema.library.tableName, 'readwrite');
-        const store = transaction.objectStore(DBTableSchema.library.tableName);
-        this.clearStoreAddItems(store, tracks).then(() => {
-          transaction.complete
-            .then(() => {
-              this.updateTransferItem('library', { isComplete: true });
-              resolve()
-            })
-            .catch(() => reject())
-        })
+  async downloadAndStoreLibrary(database: DB): Promise<void> {
+    try {
+      const albumWall = document.querySelector('app-album-wall');
+      const tracks = await this.spotifyService.getAllPaginatedItems(Endpoint.tracks, response => {
+        albumWall.addAlbums(response.items.map(item => item.track.album.images[1].url));
+        this.updateTransferProgress('library', response);
       })
-    })
+      const transaction = database.transaction(DBTableSchema.library.tableName, 'readwrite');
+      const store = transaction.objectStore(DBTableSchema.library.tableName);
+      this.clearStoreAddItems(store, tracks);
+      await transaction.complete;
+      this.updateTransferItem('library', { isComplete: true });
+      return;
+    } catch (error) {
+      console.log(error);
+      return error;
+    }
   }
 
-  downloadAndStoreArtists(database: DB): Promise<undefined> {
-    return new Promise((resolve, reject) => {
-      this.spotifyService.getAllPaginatedItems(
-        Endpoint.artists, (response) => this.updateTransferProgress('artists', response)).then(artists => {
+  async downloadAndStoreArtists(database: DB): Promise<void> {
+    try {
+      const artists = await this.spotifyService.getAllPaginatedItems(Endpoint.artists, response => this.updateTransferProgress('artists', response));
+      const transaction = database.transaction(DBTableSchema.followedArtists.tableName, 'readwrite');
+      const store = transaction.objectStore(DBTableSchema.followedArtists.tableName);
+      await this.clearStoreAddItems(store, artists);
+      await transaction.complete;
+      this.updateTransferItem('artists', { isComplete: true });
+      return
 
-          const transaction = database.transaction(DBTableSchema.followedArtists.tableName, 'readwrite');
-          const store = transaction.objectStore(DBTableSchema.followedArtists.tableName);
-          this.clearStoreAddItems(store, artists).then(() => {
-            transaction.complete
-              .then(() => {
-                this.updateTransferItem('artists', { isComplete: true });
-                resolve()
-              })
-              .catch(() => reject())
-          });
-        });
-    })
+    } catch (error) {
+      console.error(error);
+      return error;
+    }
   }
 
-  downloadAndStorePlaylists(database: DB, followedPlaylists: boolean, playlists: boolean): Promise<undefined> {
-    return new Promise((resolve, reject) => {
+  async downloadAndStorePlaylists(database: DB, followedPlaylists: boolean, playlists: boolean): Promise<void> {
 
-      const transactions: Promise<any>[] = [];
+    try {
 
-      this.spotifyService.getAllPaginatedItems(Endpoint.playlists, (response) => this.updateTransferProgress('playlists', response)).then(playlists => {
+      const playlists = await this.spotifyService.getAllPaginatedItems(Endpoint.playlists, response => {
+        this.updateTransferProgress('playlists', response);
+      });
 
-        if (followedPlaylists) {
-          const playlistsToSave = playlists.filter(playlist => playlist.owner.id !== this.userProfile.id);
-          const transaction = database.transaction(DBTableSchema.followedPlaylists.tableName, 'readwrite');
-          const store = transaction.objectStore(DBTableSchema.followedPlaylists.tableName);
+      let transactions: Promise<any>[] = [];
 
-          const followedPlaylistsPromise = new Promise((res, rej) => {
-            this.clearStoreAddItems(store, playlistsToSave).then(() => {
-              transaction.complete
-                .then(() => res())
-                .catch(() => rej())
-            })
-          })
-          transactions.push(followedPlaylistsPromise);
-        }
+      if (followedPlaylists) {
+        const playlistsToSave = playlists.filter(playlist => playlist.owner.id !== this.userProfile.id);
+        const transaction = database.transaction(DBTableSchema.followedPlaylists.tableName, 'readwrite');
+        const store = transaction.objectStore(DBTableSchema.followedPlaylists.tableName);
+        const followedPlaylistsPromise = this.clearStoreAddItems(store, playlistsToSave).then(_ => transaction.complete);
+        transactions.push(followedPlaylistsPromise);
+      }
 
-        if (playlists) {
-          const playlistsToSave = playlists.filter(playlist => playlist.owner.id === this.userProfile.id);
-          const transaction = database.transaction(DBTableSchema.playlists.tableName, 'readwrite');
-          const store = transaction.objectStore(DBTableSchema.playlists.tableName);
-
-          const playlistsPromise = new Promise((res, rej) => {
-            this.clearStoreAddItems(store, playlistsToSave).then(() => {
-              transaction.complete
-                .then(() => res())
-                .catch(() => rej())
-            })
-          })
-          transactions.push(playlistsPromise);
-        }
-
-        Promise.all(transactions)
-          .then(() => {
-            this.updateTransferItem('playlists', { isComplete: true });
-            return resolve();
-          })
-          .catch(() => reject());
-      })
-    })
+      if (playlists) {
+        const playlistsToSave = playlists.filter(playlist => playlist.owner.id === this.userProfile.id);
+        const transaction = database.transaction(DBTableSchema.playlists.tableName, 'readwrite');
+        const store = transaction.objectStore(DBTableSchema.playlists.tableName);
+        const playlistsPromise = this.clearStoreAddItems(store, playlistsToSave).then(_ => transaction.complete);
+        transactions.push(playlistsPromise);
+      }
+      await Promise.all(transactions);
+      this.updateTransferItem('playlists', { isComplete: true });
+      return;
+    } catch (error) {
+      console.error(error);
+      return error;
+    }
   }
 
   updateTransferProgress(key: string, endpointResponse: any): TransferProgress {
@@ -210,11 +189,13 @@ export class AppStepTwo {
       transferTransactions.push(this.downloadAndStoreArtists(database));
     }
 
-    Promise.all(transferTransactions).then(_ => {
-      console.log('All transactions complete');
+    try {
+      await Promise.all(transferTransactions);
       const authDialog: any = document.getElementById('authorization-dialog');
       authDialog.showModal();
-    });
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   render() {
@@ -235,6 +216,4 @@ export class AppStepTwo {
       </section>
     )
   }
-
-
 }
