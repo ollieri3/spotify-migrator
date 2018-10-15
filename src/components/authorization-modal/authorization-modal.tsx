@@ -38,8 +38,8 @@ import { SpotifyService } from '../../services';
 
   clearContinueInterval() {
     if (this.continueInterval) {
-      this.timeRemaining = 5;
       clearTimeout(this.continueInterval);
+      this.timeRemaining = 5;
     }
   }
 
