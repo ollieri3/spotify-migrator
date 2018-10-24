@@ -33,5 +33,6 @@ app-root {
 
 main {
   overflow: auto;
-  min-height: calc(100% - 60px);
+  min-height: calc(100% - 56px);
+  transition: background 0.6s ease;
 }

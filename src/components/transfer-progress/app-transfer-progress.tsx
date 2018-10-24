@@ -30,7 +30,6 @@ export class AppTransferProgress {
           {this.transferProgress && Object.keys(this.transferProgress)
             .map(key => {
               const loadingItem: LoadingProgress = this.transferProgress[key];
-              console.log('loading item rendedered: ', loadingItem);
               return (
                 <li class="progress-list__item">
                   {

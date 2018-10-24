@@ -3,7 +3,8 @@ import { CLIENT_ID } from './spotify-credentials';
 export enum Endpoint {
   tracks = 'https://api.spotify.com/v1/me/tracks?limit=50',
   playlists = 'https://api.spotify.com/v1/me/playlists?limit=50',
-  artists = 'https://api.spotify.com/v1/me/following?type=artist&limit=50'
+  artists = 'https://api.spotify.com/v1/me/following?type=artist&limit=50',
+  albums = 'https://api.spotify.com/v1/me/albums?limit=50'
 }
 
 export class SpotifyService {

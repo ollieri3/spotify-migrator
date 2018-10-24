@@ -65,11 +65,15 @@ export class AppStepTwo {
     return;
   }
 
+  async downloadAlbumImages() {
+    const albumWall = document.querySelector('app-album-wall');
+    const albums = await this.spotifyService.getAllPaginatedItems(Endpoint.albums);
+    albumWall.addAlbums(albums.map(item => item.album.images[1].url));
+  }
+
   async downloadAndStoreLibrary(database: DB): Promise<void> {
     try {
-      const albumWall = document.querySelector('app-album-wall');
       const tracks = await this.spotifyService.getAllPaginatedItems(Endpoint.tracks, response => {
-        albumWall.addAlbums(response.items.map(item => item.track.album.images[1].url));
         this.updateTransferProgress('library', response);
       })
       const transaction = database.transaction(DBTableSchema.library.tableName, 'readwrite');
@@ -163,6 +167,7 @@ export class AppStepTwo {
     const transferTransactions: Promise<any>[] = [];
 
     if (form.library) {
+      this.downloadAlbumImages();
       this.addTransferItem('library', {
         label: 'Library',
         itemsDownloaded: [0, -1],
@@ -211,8 +216,6 @@ export class AppStepTwo {
           ? <app-transfer-progress transferProgress={this.transferProgress}></app-transfer-progress>
           : <app-transfer-form></app-transfer-form>
         }
-
-        <app-album-wall></app-album-wall>
       </section>
     )
   }

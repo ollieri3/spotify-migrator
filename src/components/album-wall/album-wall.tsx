@@ -4,7 +4,8 @@ export interface AlbumGrid {
   columns: number,
   rows: number,
   albumWidth: number,
-  leftoverWidth: number
+  leftoverWidth: number,
+  leftoverHeight: number
 }
 
 export interface CanvasPosition {
@@ -81,7 +82,7 @@ export class AppAlbumWall {
     const main = document.getElementById('main');
     const albumCanvas = document.getElementById('album-canvas') as HTMLCanvasElement;
 
-    albumCanvas.height = main.clientHeight;
+    albumCanvas.height = main.offsetHeight;
     albumCanvas.width = main.offsetWidth;
 
     return {
@@ -93,15 +94,15 @@ export class AppAlbumWall {
 
   recalculateCanvasSize(numberOfItems): AlbumWallConfiguration {
 
-    const { albumCanvasEl, canvasContext } = this.albumWallReferences;
+    const { albumCanvasEl, canvasContext, mainEl } = this.albumWallReferences;
 
     canvasContext.clearRect(0, 0, albumCanvasEl.width, albumCanvasEl.height);
 
     const grid = this.calculateAlbumGridSize(numberOfItems, albumCanvasEl.width, albumCanvasEl.height);
 
-    const albumCanvasSidePadding = grid.leftoverWidth / 2;
-
-    albumCanvasEl.style.padding = `${albumCanvasSidePadding}px`;
+    albumCanvasEl.height = albumCanvasEl.offsetHeight - grid.leftoverHeight;
+    albumCanvasEl.width = albumCanvasEl.offsetWidth - grid.leftoverWidth;
+    mainEl.style.backgroundColor = '#212121';
 
     return {
       grid,
@@ -127,7 +128,8 @@ export class AppAlbumWall {
       columns,
       rows,
       albumWidth,
-      leftoverWidth: containerWidth - albumWidth * columns
+      leftoverWidth: containerWidth - albumWidth * columns,
+      leftoverHeight: containerHeight - albumWidth * rows
     };
   }
 

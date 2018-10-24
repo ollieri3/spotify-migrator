@@ -43,6 +43,7 @@ export class AppRoot {
             <stencil-route component="app-not-found"></stencil-route>
           </stencil-route-switch>
         </stencil-router>
+        <app-album-wall></app-album-wall>
       </main>,
 
       <dialog id="authorization-dialog">
