@@ -1,11 +1,21 @@
 import { Component, Prop, State, Listen } from "@stencil/core";
 import { RouterHistory } from '@stencil/router';
-import { SpotifyService, Endpoint } from "../../services";
+import { SpotifyService, Endpoint, SpotifyUser } from "../../services";
 import { TransferForm } from "../transfer-form/app-transfer-form";
 import idb, { DB, ObjectStore } from 'idb';
 import { TransferProgress, LoadingProgress } from "../transfer-progress/app-transfer-progress";
 
+export interface TransferInfo {
+  transferId: string,
+  from: SpotifyUser,
+  transferForm: TransferForm
+}
+
 export const DBTableSchema = {
+  transferInfo: {
+    tableName: 'transferInfo',
+    options: { keyPath: 'transferId'}
+  },
   library: {
     tableName: 'library',
     options: { autoIncrement: true }
@@ -33,7 +43,7 @@ export class AppStepTwo {
   @Prop() history: RouterHistory;
   @Prop() spotifyService: SpotifyService;
 
-  @State() userProfile: any;
+  @State() userProfile: SpotifyUser;
   @State() transferStarted = false;
   @State() transferProgress: TransferProgress = { downloads: {}, downloadsAreComplete: false};
 
@@ -69,6 +79,23 @@ export class AppStepTwo {
     const albumWall = document.querySelector('app-album-wall');
     const albums = await this.spotifyService.getAllPaginatedItems(Endpoint.albums);
     albumWall.addAlbums(albums.map(item => item.album.images[1].url));
+  }
+
+  async storeTransferInformation(database: DB, form: TransferForm): Promise<void> {
+    try {
+      const transferInformation : TransferInfo = {
+        transferId: `${this.userProfile.display_name.split(" ")[0]}-${this.userProfile.id}`,
+        from: this.userProfile,
+        transferForm: form
+      };
+      const transaction = database.transaction(DBTableSchema.transferInfo.tableName, 'readwrite');
+      const store = transaction.objectStore(DBTableSchema.transferInfo.tableName);
+      this.clearStoreAddItems(store, [transferInformation]);
+      await transaction.complete;
+    } catch (error) {
+      console.log(error);
+      return error;
+    }
   }
 
   async downloadAndStoreLibrary(database: DB): Promise<void> {
@@ -171,6 +198,7 @@ export class AppStepTwo {
 
     const database = await this.createDatabase(DBTableSchema);
     const transferTransactions: Promise<any>[] = [];
+    transferTransactions.push(this.storeTransferInformation(database, form));
 
     if (form.library) {
       this.downloadAlbumImages();

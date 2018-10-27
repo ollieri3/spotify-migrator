@@ -7,6 +7,16 @@ export enum Endpoint {
   albums = 'https://api.spotify.com/v1/me/albums?limit=50'
 }
 
+export interface SpotifyUser {
+  display_name: string,
+  external_urls: any,
+  followers: {href: string, total: number},
+  id: string,
+  images: {height: number, width:number, url: string }[],
+  type: string,
+  uri: string
+}
+
 export class SpotifyService {
 
   public ACCESS_TOKEN: string;
@@ -76,7 +86,7 @@ export class SpotifyService {
   }
 
 
-  public validateAccessToken(hash: string) {
+  public validateAccessToken(hash: string): Promise<SpotifyUser> {
     return new Promise((resolve, reject) => {
       try {
 
