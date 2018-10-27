@@ -1,9 +1,12 @@
 import { Component, Prop } from '@stencil/core';
 
 export interface TransferProgress {
-  library?: LoadingProgress,
-  playlists?: LoadingProgress,
-  artists?: LoadingProgress
+  downloads?: {
+    library?: LoadingProgress,
+    playlists?: LoadingProgress,
+    artists?: LoadingProgress
+  }
+  downloadsAreComplete?: boolean
 }
 
 export interface LoadingProgress {
@@ -24,12 +27,15 @@ export class AppTransferProgress {
     return (
       <section class="action-card">
 
-        <h1>Downloading...</h1>
+        {(this.transferProgress.downloadsAreComplete)
+          ? <h1>Downloads Complete</h1>
+          : <h1>Downloading...</h1>
+        }
 
         <ul class="progress-list">
-          {this.transferProgress && Object.keys(this.transferProgress)
+          {this.transferProgress && this.transferProgress.downloads && Object.keys(this.transferProgress.downloads)
             .map(key => {
-              const loadingItem: LoadingProgress = this.transferProgress[key];
+              const loadingItem: LoadingProgress = this.transferProgress.downloads[key];
               return (
                 <li class="progress-list__item">
                   {

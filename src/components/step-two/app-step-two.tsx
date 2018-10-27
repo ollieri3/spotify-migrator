@@ -35,7 +35,7 @@ export class AppStepTwo {
 
   @State() userProfile: any;
   @State() transferStarted = false;
-  @State() transferProgress: TransferProgress;
+  @State() transferProgress: TransferProgress = { downloads: {}, downloadsAreComplete: false};
 
   @Listen('startTransfer') handleTransfer(event: CustomEvent) {
     this.beginTransfer(event.detail);
@@ -140,16 +140,19 @@ export class AppStepTwo {
 
   updateTransferProgress(key: string, endpointResponse: any): TransferProgress {
     return this.updateTransferItem(key, {
-      itemsDownloaded: [this.transferProgress[key].itemsDownloaded[0] + endpointResponse.items.length, endpointResponse.total]
+      itemsDownloaded: [this.transferProgress.downloads[key].itemsDownloaded[0] + endpointResponse.items.length, endpointResponse.total]
     })
   }
 
   updateTransferItem(key: string, itemUpdate: LoadingProgress): TransferProgress {
     return this.transferProgress = {
       ...this.transferProgress,
-      [key]: {
-        ...this.transferProgress[key],
-        ...itemUpdate
+      downloads: {
+        ...this.transferProgress.downloads,
+        [key]: {
+          ...this.transferProgress.downloads[key],
+          ...itemUpdate
+        }
       }
     }
   }
@@ -157,7 +160,10 @@ export class AppStepTwo {
   addTransferItem(key: string, itemUpdate: LoadingProgress): TransferProgress {
     return this.transferProgress = {
       ...this.transferProgress,
-      [key]: itemUpdate
+      downloads: {
+        ...this.transferProgress.downloads,
+        [key]: itemUpdate
+      }
     }
   }
 
@@ -196,7 +202,8 @@ export class AppStepTwo {
 
     try {
       await Promise.all(transferTransactions);
-      const authDialog: any = document.getElementById('authorization-dialog');
+      this.transferProgress = {...this.transferProgress, downloadsAreComplete: true};
+      const authDialog = document.getElementById('authorization-dialog') as HTMLDialogElement;
       authDialog.showModal();
     } catch (error) {
       console.error(error);
@@ -204,7 +211,7 @@ export class AppStepTwo {
   }
 
   render() {
-    return (
+    return [
       <section class="page">
 
         <div class="step-heading">
@@ -216,7 +223,8 @@ export class AppStepTwo {
           ? <app-transfer-progress transferProgress={this.transferProgress}></app-transfer-progress>
           : <app-transfer-form></app-transfer-form>
         }
-      </section>
-    )
+      </section>,
+      <app-album-wall></app-album-wall>
+    ]
   }
 }

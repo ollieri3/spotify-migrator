@@ -54,9 +54,6 @@ export class AppAlbumWall {
 
   @Method() addAlbums(albums: string[]) {
 
-    albums = [...new Set(albums)];
-    albums = albums.filter(albumSrc => this.albums.findIndex(album => album.src === albumSrc) === -1);
-
     const { grid, coords } = this.recalculateCanvasSize(albums.length + this.albums.length);
     const { canvasContext } = this.albumWallReferences;
 
@@ -160,6 +157,9 @@ export class AppAlbumWall {
 
   componentDidUnload() {
     window.removeEventListener('resize', this.resizeListenerReference);
+    if(this.albumWallReferences){
+      this.albumWallReferences.mainEl.style.backgroundColor = '#fff';
+    }
   }
 
   render() {
