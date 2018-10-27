@@ -231,11 +231,15 @@ export class AppStepTwo {
     try {
       await Promise.all(transferTransactions);
       this.transferProgress = {...this.transferProgress, downloadsAreComplete: true};
-      const authDialog = document.getElementById('authorization-dialog') as HTMLDialogElement;
-      authDialog.showModal();
+      this.continue();
     } catch (error) {
       console.error(error);
     }
+  }
+
+  continue(){
+    const authDialog = document.getElementById('authorization-dialog') as HTMLDialogElement;
+    authDialog.showModal();
   }
 
   render() {
@@ -251,6 +255,12 @@ export class AppStepTwo {
           ? <app-transfer-progress transferProgress={this.transferProgress}></app-transfer-progress>
           : <app-transfer-form></app-transfer-form>
         }
+
+        { this.transferProgress.downloadsAreComplete
+          ? <div class="continue-control"><button class="button" onClick={this.continue}>continue</button></div>
+          : null
+        }
+
       </section>,
       <app-album-wall></app-album-wall>
     ]
