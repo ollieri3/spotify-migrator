@@ -109,10 +109,10 @@ export class SpotifyService {
     })
   }
 
-  public authorizeUser(returnUrl: string, showDialog = false) {
+  public authorizeUser(returnUrl: string, showDialog = false, state = '') {
     const redirect_uri = encodeURIComponent(returnUrl);
     const scopes = encodeURIComponent('user-library-read playlist-read-private user-follow-read');
-    window.location.replace(`https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${redirect_uri}&scope=${scopes}&show_dialog=${showDialog}`)
+    window.location.replace(`https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${redirect_uri}&scope=${scopes}&show_dialog=${showDialog}&state=${state}`)
   }
 
   public getUserProfile() {

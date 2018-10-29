@@ -1,6 +1,8 @@
 import { Component, Prop, State } from "@stencil/core";
-import { SpotifyService } from '../../services';
+import { SpotifyService, SpotifyUser } from '../../services';
 import { RouterHistory } from "@stencil/router";
+import { TransferInfo, DBTableSchema } from "../step-two/app-step-two";
+import idb from 'idb';
 
 @Component({
   tag: 'app-step-three',
@@ -11,12 +13,39 @@ export class AppStepThree {
   @Prop() history: RouterHistory;
   @Prop() spotifyService: SpotifyService;
 
-  @State() userProfile: any;
+  @State() transferInfo: TransferInfo;
+  @State() userProfile: SpotifyUser;
+
+  getStateFromUrl(hash: string): string{
+    const regex = RegExp('state=(.[^&]*)', 'gm');
+    const result = regex.exec(hash);
+    return result[1];
+  }
+
+  async loadTransferInformationFromDB(transferId: string): Promise<TransferInfo> {
+    try {
+      const db = await idb.open('smdb', 1);
+      const transaction = db.transaction(DBTableSchema.transferInfo.tableName, 'readonly');
+      const store = transaction.objectStore(DBTableSchema.transferInfo.tableName);
+      return await store.get(transferId);
+    } catch (err) {
+      throw new Error(err);
+    }
+  }
 
   async componentWillLoad() {
-    await this.spotifyService.validateAccessToken(this.history.location.hash)
-      .then((userProfile) => this.userProfile = userProfile)
-      .catch(() => this.history.push('/'));
+
+    const { hash } = this.history.location;
+
+    await this.spotifyService.validateAccessToken(hash)
+    .then((userProfile) => this.userProfile = userProfile)
+    .catch(() => this.history.push('/'));
+
+    this.transferInfo = await this.loadTransferInformationFromDB(this.getStateFromUrl(hash));
+
+    console.log(this.transferInfo);
+    console.log(this.userProfile);
+
   }
 
   render() {

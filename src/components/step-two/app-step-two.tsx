@@ -47,6 +47,8 @@ export class AppStepTwo {
   @State() transferStarted = false;
   @State() transferProgress: TransferProgress = { downloads: {}, downloadsAreComplete: false};
 
+  private transferInfo: TransferInfo;
+
   @Listen('startTransfer') handleTransfer(event: CustomEvent) {
     this.beginTransfer(event.detail);
     this.transferStarted = true;
@@ -81,7 +83,7 @@ export class AppStepTwo {
     albumWall.addAlbums(albums.map(item => item.album.images[1].url));
   }
 
-  async storeTransferInformation(database: DB, form: TransferForm): Promise<void> {
+  async storeTransferInformation(database: DB, form: TransferForm): Promise<TransferInfo> {
     try {
       const transferInformation : TransferInfo = {
         transferId: `${this.userProfile.display_name.split(" ")[0]}-${this.userProfile.id}`,
@@ -92,6 +94,7 @@ export class AppStepTwo {
       const store = transaction.objectStore(DBTableSchema.transferInfo.tableName);
       this.clearStoreAddItems(store, [transferInformation]);
       await transaction.complete;
+      return transferInformation;
     } catch (error) {
       console.log(error);
       return error;
@@ -198,7 +201,9 @@ export class AppStepTwo {
 
     const database = await this.createDatabase(DBTableSchema);
     const transferTransactions: Promise<any>[] = [];
-    transferTransactions.push(this.storeTransferInformation(database, form));
+    transferTransactions.push(this.storeTransferInformation(database, form).then( info =>
+      this.transferInfo = info
+    ));
 
     if (form.library) {
       this.downloadAlbumImages();
@@ -231,7 +236,7 @@ export class AppStepTwo {
     try {
       await Promise.all(transferTransactions);
       this.transferProgress = {...this.transferProgress, downloadsAreComplete: true};
-      this.continue();
+      setTimeout(this.continue.bind(this), 500); // Allow user time to see the view change
     } catch (error) {
       console.error(error);
     }
@@ -239,6 +244,8 @@ export class AppStepTwo {
 
   continue(){
     const authDialog = document.getElementById('authorization-dialog') as HTMLDialogElement;
+    const authComponent = document.querySelector('app-authorization-modal');
+    authComponent.transferId = this.transferInfo.transferId;
     authDialog.showModal();
   }
 
@@ -246,8 +253,8 @@ export class AppStepTwo {
     return [
       <section class="page">
 
-        <div class="step-heading">
-          <h1><span class="big-num">2.</span>Select items for transfer</h1>
+        <div class={`step-heading ${this.transferStarted ? 'transferring' : ''}`} >
+          <h1>What would you like to transfer?</h1>
           <app-active-user-card user={this.userProfile}></app-active-user-card>
         </div>
 
@@ -257,7 +264,7 @@ export class AppStepTwo {
         }
 
         { this.transferProgress.downloadsAreComplete
-          ? <div class="continue-control"><button class="button" onClick={this.continue}>continue</button></div>
+          ? <div class="continue-control"><button class="button" onClick={this.continue.bind(this)}>continue</button></div>
           : null
         }
 

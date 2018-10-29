@@ -108,6 +108,7 @@ declare global {
   namespace StencilComponents {
     interface AppAuthorizationModal {
       'spotifyService': SpotifyService;
+      'transferId': string;
     }
   }
 
@@ -131,6 +132,7 @@ declare global {
   namespace JSXElements {
     export interface AppAuthorizationModalAttributes extends HTMLAttributes {
       'spotifyService'?: SpotifyService;
+      'transferId'?: string;
     }
   }
 }
