@@ -54,7 +54,12 @@ import { TransferInfo } from '../step-two/app-step-two';
       <section class="authorization-info">
         <p>You'll now need to log in to the Spotify account you'd like to transfer your data to.</p>
         <p>After clicking the button below you will be directed to the Spotify authorization page, near the bottom you can click <br></br>'not you', allowing you to sign up for a new account or change to an already existing account.</p>
-        <button class="button authorization-info__continue-button" disabled={!this.canContinue} onClick={() => this.spotifyService.authorizeUser('http://localhost:3333/step-three', true, this.transferId)}>ok, let's go! {this.timeRemaining > 0 && <span>({this.timeRemaining})</span>}</button>
+        <button class="button authorization-info__continue-button" disabled={!this.canContinue} onClick={() => this.spotifyService.authorizeUser(
+          'http://localhost:3333/step-three',
+          true,
+          this.transferId,
+          ['user-library-modify']
+        )}>ok, let's go! {this.timeRemaining > 0 && <span>({this.timeRemaining})</span>}</button>
       </section>
     )
   }

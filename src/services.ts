@@ -21,38 +21,55 @@ export class SpotifyService {
 
   public ACCESS_TOKEN: string;
 
-  public get(url: string) {
-    return fetch(url, {
-      method: 'GET',
-      headers: new Headers({
-        'Authorization': 'Bearer ' + this.ACCESS_TOKEN
-      })
-    }).then(async response => {
-
-      switch (response.status) {
-
-        case 429: { // Rate limit hit await time specified in header and retry
-          const delay = response.headers.get('Retry-After');
-          console.warn(`Spotify API rate limit reached, will wait ${delay} seconds before attempting more requests`);
-          await this.networkTimeout((+delay + 0.5) * 1000) // + 0.5 to pad the time slightly before another request.
-          return this.get(url);
-        }
-
-        default: {
-          return response;
-        }
-
-      }
-
-    })
+  public async get(url: string): Promise<Response> {
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: new Headers({'Authorization': 'Bearer ' + this.ACCESS_TOKEN}),
+      });
+      return this.handleRequestRateLimiting(response, this.get.bind(this, url));
+    } catch (error) {
+      console.error(error);
+      return error;
+    }
   }
 
+  public async put(url: string, body: Object){
+    try {
+      const response = await fetch(url, {
+        method: 'PUT',
+        headers: new Headers({'Authorization': 'Bearer ' + this.ACCESS_TOKEN}),
+        body: JSON.stringify(body)
+      })
+      return this.handleRequestRateLimiting(response, this.put.bind(this, url, body));
+    } catch(error) {
+      console.error(error);
+      return error;
+    }
+  }
 
   /**
    * Resolve a promise after x number of ms passed.
    */
   private networkTimeout(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  /**
+  * Check if a request has hit the Spotify API rate limit, if so delay the request.
+  */
+  private async handleRequestRateLimiting(response: Response, retryFunction: Function,) {
+    switch (response.status) {
+      case 429: { // Rate limit hit await time specified in header and retry
+        const delay = response.headers.get('Retry-After');
+        console.warn(`Spotify API rate limit reached, will wait ${delay} seconds before attempting more requests`);
+        await this.networkTimeout((+delay + 0.5) * 1000) // + 0.5 to pad the time slightly before another request.
+        return retryFunction();
+      }
+      default: {
+        return response;
+      }
+    }
   }
 
   /**
@@ -109,10 +126,10 @@ export class SpotifyService {
     })
   }
 
-  public authorizeUser(returnUrl: string, showDialog = false, state = '') {
+  public authorizeUser(returnUrl: string, showDialog = false, state = '', scopes: string[]) {
     const redirect_uri = encodeURIComponent(returnUrl);
-    const scopes = encodeURIComponent('user-library-read playlist-read-private user-follow-read');
-    window.location.replace(`https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${redirect_uri}&scope=${scopes}&show_dialog=${showDialog}&state=${state}`)
+    const scopesString = encodeURIComponent(scopes.join(' '));
+    window.location.replace(`https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${redirect_uri}&scope=${scopesString}&show_dialog=${showDialog}&state=${state}`)
   }
 
   public getUserProfile() {

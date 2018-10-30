@@ -52,7 +52,13 @@ export class AppStepThree {
     return (
       <section class="page">
         <h1>Building your Spotify Library</h1>
-        <app-active-user-card user={this.userProfile}></app-active-user-card>
+
+        <app-active-user-card label="transferring from" user={this.transferInfo.from}></app-active-user-card>
+
+        <app-active-user-card label="transferring to" user={this.userProfile}></app-active-user-card>
+
+
+
       </section>
     )
   }

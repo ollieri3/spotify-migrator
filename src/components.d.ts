@@ -29,6 +29,7 @@ import '@stencil/router';
 
 import {
   SpotifyService,
+  SpotifyUser,
 } from './services';
 import {
   RouterHistory,
@@ -41,7 +42,8 @@ declare global {
 
   namespace StencilComponents {
     interface AppActiveUserCard {
-      'user': any;
+      'label': string;
+      'user': SpotifyUser;
     }
   }
 
@@ -64,7 +66,8 @@ declare global {
   }
   namespace JSXElements {
     export interface AppActiveUserCardAttributes extends HTMLAttributes {
-      'user'?: any;
+      'label'?: string;
+      'user'?: SpotifyUser;
     }
   }
 }

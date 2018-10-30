@@ -13,7 +13,12 @@ export class AppStepOne {
     return (
       <section class="page">
         <h1>Step One</h1>
-        <button onClick={() => this.spotifyService.authorizeUser('http://localhost:3333/step-two', true)}>Sign in with Spotify</button>
+        <button onClick={() => this.spotifyService.authorizeUser(
+          'http://localhost:3333/step-two',
+          true,
+          null,
+          ['user-library-read', 'playlist-read-private', 'user-follow-read']
+        )}>Sign in with Spotify</button>
       </section>
     )
   }
