@@ -1,27 +1,35 @@
+app-step-two {
+  .page {
+    max-width: 55%;
+  }
+}
+
+
+.step-heading.transferring {
+  h1 {
+    display: none;
+    margin-top: 1em;
+  }
+}
+
+app-active-user-card {
+  width: 100%;
+}
+
 .step-heading {
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  margin-bottom: 10px;
+  margin-bottom: 1rem;
 
   h1 {
     margin: 0;
+    margin-bottom: 1rem;
   }
 }
 
-.step-heading.transferring {
-  h1 {
-    display: none;
-  }
-  app-active-user-card {
-    transition: width 0.6s ease;
-    width: 100%;
-  }
-
-}
-
-app-step-two .page {
+.page {
   position: relative;
   z-index: 10;
   background-color: rgba(255,255,255, 0.97);

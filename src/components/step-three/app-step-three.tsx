@@ -1,8 +1,8 @@
 import { Component, Prop, State } from "@stencil/core";
 import { SpotifyService, SpotifyUser } from '../../services';
 import { RouterHistory } from "@stencil/router";
-import { TransferInfo, DBTableSchema } from "../step-two/app-step-two";
 import idb from 'idb';
+import { TransferInfo, DBTableSchema } from "../step-two/app-step-two.models";
 
 @Component({
   tag: 'app-step-three',
@@ -49,17 +49,33 @@ export class AppStepThree {
   }
 
   render() {
+
+    if(this.transferInfo.from.id === this.userProfile.id){
+      console.error('Cannot transfer to same account');
+      return (
+        <section class="page">
+          <h1>Cannot transfer to same user account</h1>
+          <button class="button" onClick={() => this.spotifyService.authorizeUser(
+          'http://localhost:3333/step-three',
+          true,
+          this.transferInfo.transferId,
+          ['user-library-modify']
+        )}>Click here to try again</button>
+        </section>
+      )
+    }
+
     return (
       <section class="page">
         <h1>Building your Spotify Library</h1>
-
         <app-active-user-card label="transferring from" user={this.transferInfo.from}></app-active-user-card>
-
         <app-active-user-card label="transferring to" user={this.userProfile}></app-active-user-card>
-
-
-
       </section>
+
+
+
+
+
     )
   }
 

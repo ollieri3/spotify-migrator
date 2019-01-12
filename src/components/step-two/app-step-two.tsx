@@ -1,38 +1,10 @@
 import { Component, Prop, State, Listen } from "@stencil/core";
 import { RouterHistory } from '@stencil/router';
 import { SpotifyService, Endpoint, SpotifyUser } from "../../services";
-import { TransferForm } from "../transfer-form/app-transfer-form";
 import idb, { DB, ObjectStore } from 'idb';
-import { TransferProgress, LoadingProgress } from "../transfer-progress/app-transfer-progress";
-
-export interface TransferInfo {
-  transferId: string,
-  from: SpotifyUser,
-  transferForm: TransferForm
-}
-
-export const DBTableSchema = {
-  transferInfo: {
-    tableName: 'transferInfo',
-    options: { keyPath: 'transferId'}
-  },
-  library: {
-    tableName: 'library',
-    options: { autoIncrement: true }
-  },
-  playlists: {
-    tableName: 'playlists',
-    options: { autoIncrement: true }
-  },
-  followedPlaylists: {
-    tableName: 'followedPlaylists',
-    options: { autoIncrement: true }
-  },
-  followedArtists: {
-    tableName: 'followedArtists',
-    options: { autoIncrement: true }
-  }
-}
+import { TransferInfo, DBTableSchema } from "./app-step-two.models";
+import { TransferProgress, LoadingProgress } from "../transfer-progress/app-transfer-progress.models";
+import { TransferForm } from "../transfer-form/app-transfer-form.models";
 
 @Component({
   tag: 'app-step-two',
@@ -253,9 +225,10 @@ export class AppStepTwo {
     return [
       <section class="page">
 
-        <div class={`step-heading ${this.transferStarted ? 'transferring' : ''}`} >
+        {/* <div class={`step-heading ${this.transferStarted ? 'transferring' : ''}`} > */}
+        <div class='step-heading'>
           <h1>What would you like to transfer?</h1>
-          <app-active-user-card user={this.userProfile}></app-active-user-card>
+          <app-active-user-card label="transferring from" user={this.userProfile}></app-active-user-card>
         </div>
 
         {(this.transferStarted)

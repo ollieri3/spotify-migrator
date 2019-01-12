@@ -1,6 +1,5 @@
 import { Component, Prop, State, Element } from '@stencil/core';
 import { SpotifyService } from '../../services';
-import { TransferInfo } from '../step-two/app-step-two';
 
 @Component({
   tag: 'app-authorization-modal',

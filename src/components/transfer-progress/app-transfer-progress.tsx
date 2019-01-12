@@ -1,19 +1,5 @@
 import { Component, Prop } from '@stencil/core';
-
-export interface TransferProgress {
-  downloads?: {
-    library?: LoadingProgress,
-    playlists?: LoadingProgress,
-    artists?: LoadingProgress
-  }
-  downloadsAreComplete?: boolean
-}
-
-export interface LoadingProgress {
-  label?: string,
-  itemsDownloaded?: [number, number],
-  isComplete?: boolean,
-}
+import { TransferProgress, LoadingProgress } from './app-transfer-progress.models';
 
 @Component({
   tag: 'app-transfer-progress',

@@ -1,12 +1,6 @@
 import { Component, State, Event } from '@stencil/core';
 import { EventEmitter } from '@stencil/state-tunnel/dist/types/stencil.core';
-
-export interface TransferForm {
-  library: boolean,
-  playlists: boolean,
-  followedPlaylists: boolean,
-  followedArtists: boolean
-}
+import { TransferForm } from './app-transfer-form.models';
 
 @Component({
   tag: 'app-transfer-form',

@@ -1,34 +1,10 @@
 import { Component, Method } from '@stencil/core';
-
-export interface AlbumGrid {
-  columns: number,
-  rows: number,
-  albumWidth: number,
-  leftoverWidth: number,
-  leftoverHeight: number
-}
-
-export interface CanvasPosition {
-  x: number,
-  y: number
-}
-
-export interface AlbumWallReferences {
-  canvasContext: CanvasRenderingContext2D,
-  albumCanvasEl: HTMLCanvasElement,
-  mainEl: HTMLElement
-}
-
-export interface AlbumWallConfiguration {
-  grid: AlbumGrid,
-  coords: CanvasPosition[]
-}
+import { AlbumWallReferences, AlbumWallConfiguration, AlbumGrid, CanvasPosition } from './album-wall.models';
 
 @Component({
   tag: 'app-album-wall',
   styleUrl: './album-wall.scss'
-})
-export class AppAlbumWall {
+}) export class AppAlbumWall {
 
   private albums: { image: HTMLImageElement, width: number, height: number, src: string }[] = [];
   private albumWallReferences: AlbumWallReferences;
@@ -52,7 +28,7 @@ export class AppAlbumWall {
     }, 500);
   }
 
-  @Method() addAlbums(albums: string[]) {
+  @Method() async addAlbums(albums: string[]) {
 
     const { grid, coords } = this.recalculateCanvasSize(albums.length + this.albums.length);
     const { canvasContext } = this.albumWallReferences;
@@ -163,7 +139,7 @@ export class AppAlbumWall {
   }
 
   render() {
-    return <canvas id="album-canvas"></canvas>
+    return (<canvas id="album-canvas"></canvas>)
   }
 
 }
