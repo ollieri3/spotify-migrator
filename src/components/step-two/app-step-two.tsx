@@ -208,7 +208,6 @@ export class AppStepTwo {
     try {
       await Promise.all(transferTransactions);
       this.transferProgress = {...this.transferProgress, downloadsAreComplete: true};
-      setTimeout(this.continue.bind(this), 500); // Allow user time to see the view change
     } catch (error) {
       console.error(error);
     }
