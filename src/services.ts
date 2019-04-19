@@ -21,31 +21,55 @@ export class SpotifyService {
 
   public ACCESS_TOKEN: string;
 
-  public async get(url: string): Promise<Response> {
+  public async request(requestInfo: {url: string, method?: any, headers?: Headers, body?: any}) : Promise<Response>{
+
+    const method = requestInfo.method || 'url';
+    const headers = requestInfo.headers || new Headers();
+    headers.append('Authorization', `Bearer $${this.ACCESS_TOKEN}`);
+    const body  = requestInfo.body || {};
+
     try {
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: new Headers({'Authorization': 'Bearer ' + this.ACCESS_TOKEN}),
-      });
-      return this.handleRequestRateLimiting(response, this.get.bind(this, url));
-    } catch (error) {
-      console.error(error);
-      return error;
+      const response = await fetch(requestInfo.url, {
+        method,
+        headers,
+        body: JSON.stringify(body)
+      })
+      return this.handleRequestRateLimiting(response, this.request.bind(this, {url: requestInfo.url, method, headers, body}));
+    } catch (err) {
+      console.error(err);
+      return err;
     }
   }
 
-  public async put(url: string, body: Object){
-    try {
-      const response = await fetch(url, {
-        method: 'PUT',
-        headers: new Headers({'Authorization': 'Bearer ' + this.ACCESS_TOKEN}),
-        body: JSON.stringify(body)
-      })
-      return this.handleRequestRateLimiting(response, this.put.bind(this, url, body));
-    } catch(error) {
-      console.error(error);
-      return error;
-    }
+  public async get(url: string): Promise<Response> {
+    return this.request({url, method: 'GET'});
+
+    // try {
+    //   const response = await fetch(url, {
+    //     method: 'GET',
+    //     headers: new Headers({'Authorization': 'Bearer ' + this.ACCESS_TOKEN}),
+    //   });
+    //   return this.handleRequestRateLimiting(response, this.get.bind(this, url));
+    // } catch (error) {
+    //   console.error(error);
+    //   return error;
+    // }
+  }
+
+  public async put(url: string, body: Object): Promise<Response> {
+    return this.request({url, method: 'PUT', body});
+
+    // try {
+    //   const response = await fetch(url, {
+    //     method: 'PUT',
+    //     headers: new Headers({'Authorization': 'Bearer ' + this.ACCESS_TOKEN}),
+    //     body: JSON.stringify(body)
+    //   })
+    //   return this.handleRequestRateLimiting(response, this.put.bind(this, url, body));
+    // } catch(error) {
+    //   console.error(error);
+    //   return error;
+    // }
   }
 
   /**
