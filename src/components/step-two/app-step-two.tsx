@@ -30,6 +30,7 @@ export class AppStepTwo {
     try {
       this.userProfile = await this.spotifyService.validateAccessToken(this.history.location.hash);
     } catch (error) {
+      console.log("This statement was hit and caught");
       console.error(error);
       this.history.push('/');
     }
